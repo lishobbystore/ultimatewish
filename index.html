@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lis Gacha Pull</title>
+    <title>Lis Ultimate Wishes</title>
     <style>
         * {
             box-sizing: border-box;
@@ -43,9 +44,7 @@
         }
 
         #result {
-            /* 🎯 Opacity setting for the result box */
             background: rgba(255, 255, 255, 0.2);
-            /* Adjust opacity here */
             backdrop-filter: blur(8px);
             padding: 20px 30px;
             border-radius: 14px;
@@ -56,7 +55,6 @@
             width: 280px;
             min-height: 200px;
             display: block;
-            /* Show placeholder text initially */
             transition: all 0.3s ease;
         }
 
@@ -114,7 +112,6 @@
             }
         }
 
-        /* 📌 Placeholder for full-screen image layer */
         #fullImage {
             position: absolute;
             top: 0;
@@ -127,7 +124,6 @@
             z-index: -1;
         }
 
-        /* 📌 Side image (always visible) */
         #sideImage {
             position: absolute;
             top: 30%;
@@ -167,8 +163,18 @@
             }
 
             #sideImage {
-                height: 40vh;
-                opacity: 0.3;
+                display: none;
+                /* Hide side visual on mobile */
+            }
+
+            footer {
+                font-size: 12px;
+                padding: 10px;
+            }
+
+            #loadingGif {
+                width: 100%;
+                max-width: 300px;
             }
         }
     </style>
@@ -176,7 +182,7 @@
 
 <body>
 
-    <!-- 👤 Side image always visible -->
+    <!-- 👤 Side image always visible (hidden on mobile) -->
     <img id="sideImage" src="lis.png" alt="Side Visual" />
 
     <img src="logo.png" alt="Lis Ultimate Wishes Logo" style="max-width: 320px; margin-top: 5px; z-index: 0.5;" />
@@ -190,7 +196,6 @@
         </div>
 
         <div id="result">
-            <!-- 🖼️ Image placeholder for the reward -->
             <img id="rewardImage" src="" alt="Reward Image" />
             <div id="resultText">Waiting for your first pull...</div>
         </div>
@@ -223,12 +228,11 @@
         function pickReward() {
             const roll = Math.random() * 100;
             let total = 0;
-
             for (let r of rewards) {
                 total += r.chance;
                 if (roll <= total) return r;
             }
-            return rewards[rewards.length - 1]; // fallback
+            return rewards[rewards.length - 1];
         }
 
         button.addEventListener("click", () => {
@@ -239,7 +243,6 @@
 
             setTimeout(() => {
                 const reward = pickReward();
-
                 resultText.textContent = "You won: " + reward.name;
 
                 if (reward.image) {
@@ -253,7 +256,7 @@
 
                 button.textContent = "Next Pull";
                 button.disabled = false;
-            }, 1500); // ⏱️ Adjust loading duration here
+            }, 1500);
         });
     </script>
 </body>
