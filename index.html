@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lis Gacha Pull</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(to bottom right, #e0f0ff, #ffffff);
+            font-family: "Segoe UI", "Roboto", sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            position: relative;
+            padding: 30px 20px 80px;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 32px;
+            color: #222;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .gacha-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 20px;
+            width: 100%;
+            margin-top: 40px;
+            z-index: 1;
+        }
+
+        #result {
+            /* 🎯 Opacity setting for the result box */
+            background: rgba(255, 255, 255, 0.2);
+            /* Adjust opacity here */
+            backdrop-filter: blur(8px);
+            padding: 20px 30px;
+            border-radius: 14px;
+            font-size: 20px;
+            font-weight: 500;
+            text-align: center;
+            color: #333;
+            width: 280px;
+            min-height: 200px;
+            display: block;
+            /* Show placeholder text initially */
+            transition: all 0.3s ease;
+        }
+
+        #rewardImage {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        #loading {
+            color: #444;
+            font-size: 18px;
+            display: none;
+            text-align: center;
+        }
+
+        #loadingGif {
+            width: 450px;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        #gachaButton {
+            padding: 14px 30px;
+            font-size: 18px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: absolute;
+            bottom: 12%;
+            z-index: 2;
+        }
+
+        #gachaButton:hover {
+            background-color: #145bb0;
+        }
+
+        .fade {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 📌 Placeholder for full-screen image layer */
+        #fullImage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            display: none;
+            z-index: -1;
+        }
+
+        /* 📌 Side image (always visible) */
+        #sideImage {
+            position: absolute;
+            top: 30%;
+            left: 150vh;
+            transform: translateY(-20%);
+            height: 80vh;
+            object-fit: contain;
+            z-index: 0;
+            display: block;
+            pointer-events: none;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            background-color: #1976d2;
+            color: white;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        @media screen and (max-width: 768px) {
+            h1 {
+                font-size: 26px;
+            }
+
+            #gachaButton {
+                bottom: 10%;
+            }
+
+            #result {
+                width: 90%;
+            }
+
+            #sideImage {
+                height: 40vh;
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 👤 Side image always visible -->
+    <img id="sideImage" src="lis.png" alt="Side Visual" />
+
+    <img src="logo.png" alt="Lis Ultimate Wishes Logo" style="max-width: 320px; margin-top: 5px; z-index: 0.5;" />
+
+    <div class="gacha-container">
+        <div id="loading">
+            Pulling your reward...
+            <div>
+                <img id="loadingGif" src="wish.gif" alt="Loading animation" />
+            </div>
+        </div>
+
+        <div id="result">
+            <!-- 🖼️ Image placeholder for the reward -->
+            <img id="rewardImage" src="" alt="Reward Image" />
+            <div id="resultText">Waiting for your first pull...</div>
+        </div>
+    </div>
+
+    <button id="gachaButton">Wishes</button>
+
+    <footer>
+        &copy; 2025 Lichtschein Hobby Store | Follow @lishobbystore on Instagram for more promos! 🚀
+    </footer>
+
+    <script>
+        const rewards = [
+            { name: "Official Mihoyo Badge", chance: 30, image: "badge.png" },
+            { name: "2 pcs Booster Pokemon", chance: 30, image: "booster.png" },
+            { name: "Official Genshin Impact TCG Booster", chance: 20, image: "tcg.png" },
+            { name: "Official Mihoyo Keychain", chance: 10, image: "keychain.png" },
+            { name: "Official Mihoyo Standee", chance: 4.2, image: "standee.png" },
+            { name: "Blokees Kamen Rider", chance: 4.6, image: "kamen.png" },
+            { name: "Coin Pouch Collei Amber", chance: 0.7, image: "pouch.png" },
+            { name: "Zhongli Plush", chance: 0.5, image: "zhongli.png" }
+        ];
+
+        const button = document.getElementById("gachaButton");
+        const loading = document.getElementById("loading");
+        const result = document.getElementById("result");
+        const resultText = document.getElementById("resultText");
+        const rewardImage = document.getElementById("rewardImage");
+
+        function pickReward() {
+            const roll = Math.random() * 100;
+            let total = 0;
+
+            for (let r of rewards) {
+                total += r.chance;
+                if (roll <= total) return r;
+            }
+            return rewards[rewards.length - 1]; // fallback
+        }
+
+        button.addEventListener("click", () => {
+            button.disabled = true;
+            loading.style.display = "block";
+            result.style.display = "none";
+            rewardImage.style.display = "none";
+
+            setTimeout(() => {
+                const reward = pickReward();
+
+                resultText.textContent = "You won: " + reward.name;
+
+                if (reward.image) {
+                    rewardImage.src = reward.image;
+                    rewardImage.style.display = "block";
+                }
+
+                loading.style.display = "none";
+                result.style.display = "block";
+                result.classList.add("fade");
+
+                button.textContent = "Next Pull";
+                button.disabled = false;
+            }, 1500); // ⏱️ Adjust loading duration here
+        });
+    </script>
+</body>
+
+</html>
